@@ -1,4 +1,6 @@
 
+from matplotlib import ticker
+from matplotlib.pyplot import get
 import pandas as pd
 import dash
 import plotly.express as px
@@ -9,6 +11,7 @@ from dash import dcc, html, dash_table
 from dash.dependencies import Output, Input, State
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
+import data_process
 
 
 df = pd.read_csv("datastore.csv")
@@ -16,8 +19,27 @@ df = df.groupby(['ticker', 'provider', 'date'])[['price']].mean()
 df.reset_index(inplace=True)
 
 
-def calculateEGS(df):
-    return df
+def get_Pie(text, temp_df):
+    last_entry = temp_df.iloc[-1]
+    temp_df = data_process.get_index_percentage(last_entry)
+
+    fig = px.pie(temp_df, values="value",
+                 names="index", title=text)
+
+    fig.update_layout(height=300, font_color="white",
+                      plot_bgcolor="rgba(0, 0, 0, 0)", paper_bgcolor="rgba(0, 0, 0, 0)", title_x=0.5, margin=dict(l=20, r=20, t=30, b=20))
+    fig.update_xaxes(visible=False)
+    fig.update_yaxes(visible=False)
+
+    # Use `hole` to create a donut-like pie chart
+    fig.update_traces(hole=.4, hoverinfo="label+percent+name")
+
+    fig.update_layout(
+        title_text=text,
+        # Add annotations in the center of the donut pies.
+        annotations=[dict(text=text[0], x=0.5, y=0.5, font_size=50, showarrow=False, font_color="white"),
+                     dict(text=str(round(last_entry.factor, 2)), x=0, y=0, font_size=50, showarrow=False, font_color="white")])
+    return fig
 
 
 #  still deciding on DARKLY, SLATE, SUPERHERO #
@@ -26,15 +48,19 @@ app = dash.Dash(__name__, external_stylesheets=[dbc.themes.SLATE], meta_tags=[
 server = app.server
 app.title = "ESG Analyser"
 app.layout = dbc.Container(fluid=True, children=[
-    html.H1("ESG Analyser", style={'text-align': 'center'}),
+    # html.H1("ESG Analyser", style={'text-align': 'center'}),
     dbc.Row([
-        dcc.Dropdown(id="select_ticker",
-                     options=[{'label': i, 'value': i} for i in df.ticker.unique()],
-                     placeholder='Select ticker',
-                     multi=False,
-                     style={'width': "40%"}
-                     ),
-
+        dbc.Col([
+            dcc.Dropdown(id="select_ticker",
+                         options=[{'label': i, 'value': i} for i in df.ticker.unique()],
+                         placeholder='Select ticker',
+                         multi=False,
+                         #  style={'width': "40%"}
+                         ),
+        ], width=3),
+        dbc.Col([
+            html.H1("ESG Analyser", style={'text-align': 'center'})
+        ], width=7)
     ]),
 
     dbc.Row([
@@ -65,7 +91,7 @@ app.layout = dbc.Container(fluid=True, children=[
                 ])
             ])
         ], width=4),
-    ], style={"height": "60vh"}),
+    ], style={"height": "42vh"}),
     dbc.Row([
         dbc.Col([
             dbc.Card([
@@ -75,7 +101,7 @@ app.layout = dbc.Container(fluid=True, children=[
             ])
         ], width=12),
     ], style={"height": "40vh"},)
-])
+], className="mt-2 mb-2")
 
 
 @ app.callback(
@@ -86,53 +112,12 @@ app.layout = dbc.Container(fluid=True, children=[
     Input(component_id='select_ticker', component_property='value')
 )
 def update_graph(ticker):
+    if(ticker == None):
+        ticker = df.ticker.unique()[0]
 
-    fig_E = px.pie(df, values="price",
-                   names="ticker", title="Economic rating")
-    fig_E.update_layout(font_color="white",
-                        plot_bgcolor="rgba(0, 0, 0, 0)", paper_bgcolor="rgba(0, 0, 0, 0)", title_x=0.5, margin=dict(l=20, r=20, t=30, b=20))
-    fig_E.update_xaxes(visible=False)
-    fig_E.update_yaxes(visible=False)
-
-    # Use `hole` to create a donut-like pie chart
-    fig_E.update_traces(hole=.4, hoverinfo="label+percent+name")
-
-    fig_E.update_layout(
-        title_text="Global Emissions 1990-2011",
-        # Add annotations in the center of the donut pies.
-        annotations=[dict(text='E', x=0.5, y=0.5, font_size=60, showarrow=False, font_color="white")])
-
-    fig_S = px.pie(df, values="price",
-                   names="ticker", title="Economic rating")
-
-    fig_S.update_layout(font_color="white",
-                        plot_bgcolor="rgba(0, 0, 0, 0)", paper_bgcolor="rgba(0, 0, 0, 0)", title_x=0.5, margin=dict(l=20, r=20, t=30, b=20))
-    fig_S.update_xaxes(visible=False)
-    fig_S.update_yaxes(visible=False)
-
-    # Use `hole` to create a donut-like pie chart
-    fig_S.update_traces(hole=.4, hoverinfo="label+percent+name")
-
-    fig_S.update_layout(
-        title_text="Global Emissions 1990-2011",
-        # Add annotations in the center of the donut pies.
-        annotations=[dict(text='S', x=0.5, y=0.5, font_size=60, showarrow=False, font_color="white")])
-
-    fig_G = px.pie(df, values="price",
-                   names="ticker", title="Economic rating")
-
-    fig_G.update_layout(font_color="white",
-                        plot_bgcolor="rgba(0, 0, 0, 0)", paper_bgcolor="rgba(0, 0, 0, 0)", title_x=0.5, margin=dict(l=20, r=20, t=30, b=20))
-    fig_G.update_xaxes(visible=False)
-    fig_G.update_yaxes(visible=False)
-
-    # Use `hole` to create a donut-like pie chart
-    fig_G.update_traces(hole=.4, hoverinfo="label+percent+name")
-
-    fig_G.update_layout(
-        title_text="Global Emissions 1990-2011",
-        # Add annotations in the center of the donut pies.
-        annotations=[dict(text='G', x=0.5, y=0.5, font_size=60, showarrow=False, font_color="white")])
+    fig_E = get_Pie("Economic factor", data_process.get_E(ticker))
+    fig_S = get_Pie("Social factor", data_process.get_S(ticker))
+    fig_G = get_Pie("Governance factor", data_process.get_G(ticker))
 
     return fig_E, fig_S, fig_G, 0
 
