@@ -47,8 +47,21 @@ def get_ESG(ticker):
 
     return ESG
 
+def get_index_percentage(row):
+    indices=([i[:-7] for i in row.index if "_weight" in i])
+
+    index_df=pd.DataFrame({
+        "index": indices,
+        "value": [row[i]*row[i+"_weight"] for i in indices]
+    })
+
+    index_df["value"]=index_df["value"].div(row['factor']).div(sum([row[i+"_weight"] for i in indices]))
+
+    return index_df
+
 if __name__ == "__main__":
     a=get_G("GGL")
     print(a)
 
-    print(get_ESG("GGL"))
+    # print(get_index_percentage(a.iloc[-1]))
+    # print(get_ESG("GGL"))
