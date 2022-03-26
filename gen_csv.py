@@ -2,11 +2,11 @@ import csv
 import random
 import itertools
 
-tickers=["GGL", "FMI", "MMN"]
+tickers = ["GGL", "FMI", "MMN"]
 
-provider=["ARAT","P2","P3"]
+provider = ["ARAT", "P2", "P3"]
 
-date=["2017Q1", "2017Q2", "2017Q3", "2017Q4", "2018Q5"]
+date = ["2017Q1", "2017Q2", "2017Q3", "2017Q4", "2018Q5"]
 
 indices_E=["I1"]
 indices_S=["I2"]
