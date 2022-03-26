@@ -6,16 +6,12 @@ tickers = ["GGL", "FMI", "MMN"]
 
 provider = ["ARAT", "P2", "P3"]
 
-date = ["2017Q1", "2017Q2", "2017Q3", "2017Q4", "2018Q5"]
+date = ["2017Q1", "2017Q2", "2017Q3", "2017Q4", "2018Q1"]
 
-indices_E=["I1"]
-indices_S=["I2"]
-indices_G=["I3"]
-# ["I1", "I2", "I3"]
+indices_E=["I1", "I4", "I7"]
+indices_S=["I2", "I5", "I8"]
+indices_G=["I3", "I6", "I9"]
 indices=indices_E+indices_S+indices_G
-
-
-# index_weight=[random.randint(1,1000)/100 for i in indices]
 
 
 if __name__ =="__main__":

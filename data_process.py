@@ -28,8 +28,7 @@ def get_factor(ticker, cols):
     b['factor']=c=b.apply(ce_face_functia_ta, axis=1)#raw=False
 
     c=b.groupby(general_col[2]).mean()
-
-    return c
+    return c.reset_index()
 
 # a=get_factor("GGL", S_col)
 
@@ -37,7 +36,19 @@ def get_E(ticker): return get_factor(ticker, E_col)
 def get_S(ticker): return get_factor(ticker, S_col)
 def get_G(ticker): return get_factor(ticker, G_col)
 
+def get_ESG(ticker):
+    E=get_E(ticker).rename(columns={"factor":"E"})
+    S=get_S(ticker).rename(columns={"factor":"S"})
+    G=get_G(ticker).rename(columns={"factor":"G"})
+    ESG=E['date']#.reset_index()
 
-a=get_G("GGL")
-print(a)
-# b['E']=
+    ESG=pd.concat([ESG, E['E'], S['S'], G['G']], axis=1)
+    ESG['EGS']=E['E']+S['S']+G['G']
+
+    return ESG
+
+if __name__ == "__main__":
+    a=get_G("GGL")
+    print(a)
+
+    print(get_ESG("GGL"))
