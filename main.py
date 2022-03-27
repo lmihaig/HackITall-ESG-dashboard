@@ -158,7 +158,7 @@ def update_graph(ticker):
                                  name='Lower Bollinger Band',
                                  opacity=0.5),
                       row=1, col=1)
-
+    fig_ESG.update_xaxes(visible=False)
     return fig_E, fig_S, fig_G, fig_ESG
 
 

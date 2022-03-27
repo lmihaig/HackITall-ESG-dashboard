@@ -2,7 +2,9 @@ import csv
 import random
 import itertools
 
-tickers = ["GGL", "FMI", "MMN"]
+
+tickers = ["GGL", "FMI", "MMN", "FLOP", "PGP", "SSH", "OSPF", "LSAC", "DDD", "CASL", "IRAM", "MLK", "PIN", "ASM", "PIP", "SPRP"]
+
 
 provider = ["ARAT", "ISS", "MSCI", "ETHOS", "MRATE"]
 
