@@ -21,14 +21,15 @@ if __name__ == "__main__":
     w = csv.writer(f)
     w.writerow(["ticker", "provider", "date", "price"] + list(itertools.chain.from_iterable([(i, f"{i}_weight") for i in indices])))
 
-    last_value={ t:{i:random.randint(1, 1000)/100 for i in indices} for t in tickers}
+    last_value = {t: {i: random.randint(100, 1000)/100 for i in indices} for t in tickers}
+    ticker_preference = {t: random.randint(-2, 2) for t in tickers}
 
-    for t in tickers:
-        for d in date:
+    for d in date:
+        last_value = {t: {i: last_value[t][i]*random.randint(80+ticker_preference[t], 120+ticker_preference[t])/100 for i in indices} for t in tickers}
+        for t in tickers:
             price = random.randint(1, 1000*100)/100
-            last_value={ t:{i:last_value[t][i]*random.randint(50, 150)/100 for i in indices} for t in tickers}
             for p in provider:
 
-                w.writerow([t, p, d, price] + list(itertools.chain.from_iterable([(last_value[t][i]*random.randint(95, 105)/100, random.randint(0, 100)) for i in indices])))
+                w.writerow([t, p, d, price] + list(itertools.chain.from_iterable([(min(10, last_value[t][i]*random.randint(95, 105)/100), random.randint(1, 30)) for i in indices])))
                 # for i in indices:
                 #     pass

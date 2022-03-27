@@ -160,7 +160,7 @@ def update_graph(ticker):
                           plot_bgcolor="rgba(0, 0, 0, 0)", paper_bgcolor="rgba(0, 0, 0, 0)", title_x=0.5, margin=dict(l=20, r=20, t=30, b=20),  yaxis_title="ESG score", xaxis_title="Financial Quarter")
     # fig_ESG.update_xaxes(visible=False)
 
-    WINDOW = 30
+    WINDOW = 20
     esg_df['sma'] = esg_df['ESG'].rolling(WINDOW).mean()
     esg_df['std'] = esg_df['ESG'].rolling(WINDOW).std(ddof=0)
 
