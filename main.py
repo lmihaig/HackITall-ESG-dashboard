@@ -193,6 +193,13 @@ def update_graph(ticker):
                       row=1, col=1)
     fig_ESG.update_xaxes(visible=False)
 
+    future_df = data_process.extrapolate_next_year(esg_df, factor_col="ESG").iloc[-5:]
+    fig_ESG.add_trace(go.Scatter(x=future_df['date'],
+                                 y=future_df['ESG'],
+                                 line_color='blue',
+                                 name='Prediction'),
+                      row=1, col=1)
+
     score = esg_df.ESG.iloc[-1]
     grade = ""
     match score:
@@ -227,13 +234,15 @@ def update_graph(ticker):
 
     stockPrice = data_process.get_price(ticker).iloc[-1].price
 
-    perc = 1
-    newStockPrice = stockPrice * perc
+    latest_ESG = future_df.ESG.iloc[-1]
+    perc = round(latest_ESG/score - 1, 2)
+    print(perc)
+    newStockPrice = round(stockPrice * (1+perc), 2)
     if newStockPrice <= stockPrice:
         stockPrice_colour = {"color": "red"}
     else:
         stockPrice_colour = {"color": "green"}
-    stockPrice = str(stockPrice) + "➜" + str(newStockPrice)
+    stockPrice = "$"+str(stockPrice) + "➜$" + str(newStockPrice)
     score = round(score, 2)
     percentage = "Last Quarter: "+str(percentage)+"%"
     lastyear_percentage = "Last Year: "+str(lastyear_percentage)+"%"
@@ -241,4 +250,4 @@ def update_graph(ticker):
 
 
 if __name__ == "__main__":
-    app.run_server(debug=True)
+    app.run_server(debug=False)

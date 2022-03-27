@@ -15,18 +15,24 @@ G_col = list(itertools.chain.from_iterable([(i, f"{i}_weight") for i in indices_
 def get_index_coloumns(row): return ([i[:-7] for i in row.index if "_weight" in i])
 def get_index_weight_coloumns(row): return ([i for i in row.index if "_weight" in i])
 
+
 def next_date(date):
-    year,q=map(int,date.split("Q"))
-    q+=1
-    if(q==5):
-        q=1
-        year+=1
+    year, q = map(int, date.split("Q"))
+    q += 1
+    if(q == 5):
+        q = 1
+        year += 1
     return f"{year}Q{q}"
 
 # Function to curve fit to the data
+
+
 def func(x, a, b, c, d): return a * (x ** 3) + b * (x ** 2) + c * x + d
+
+
 # Initial parameter guess, just to kick off the optimization
 guess = (0.5, 0.5, 0.5, 0.5)
+
 
 def ce_face_functia_ta(rows):
     indices = get_index_coloumns(rows)
@@ -50,43 +56,42 @@ def get_factor(ticker, cols):
     c = b.groupby(general_col[2]).mean()
     return c.reset_index()
 
-def extrapolate_next_year(original):
-    last_date=original.iloc[-1]['date']
 
-    new_dates=[]
+def extrapolate_next_year(original, factor_col="factor"):
+    last_date = original.iloc[-1]['date']
+
+    new_dates = []
     for i in range(4):
-        last_date=next_date(last_date)
+        last_date = next_date(last_date)
         new_dates.append(last_date)
-    original=original[['date','factor']]#.iloc[-35:]
-    new=pd.concat([original ,pd.DataFrame(new_dates, columns=["date"])], ignore_index=True)
+    original = original[['date', factor_col]]  # .iloc[-35:]
+    new = pd.concat([original, pd.DataFrame(new_dates, columns=["date"])], ignore_index=True)
     # print(new)
     # print(new.index)
     # https://stackoverflow.com/questions/22491628/extrapolate-values-in-pandas-dataframe/35959909#35959909
     col_params = {}
 
     # Curve fit each column
-    col='factor'
     # Get x & y
     x = original.index.astype(float).values
-    y = original[col].values
+    y = original[factor_col].values
     # print(x,y,guess)
     # Curve fit column and get curve parameters
     params = curve_fit(func, x, y, guess)
     # Store optimized parameters
-    col_params[col] = params[0]
+    col_params[factor_col] = params[0]
     # print(params)
 
-    col='factor'
     # Extrapolate each column
 
     # Get the index values for NaNs in the column
-    x = new[pd.isnull(new[col])].index.astype(float).values
+    x = new[pd.isnull(new[factor_col])].index.astype(float).values
     # Extrapolate those points with the fitted function
-    new[col][x] = func(x, *col_params[col])
+    new[factor_col][x] = func(x, *col_params[factor_col])
 
     # print(new)
 
-    return new#.interpolate(method="spline", order=2, limit_are="outside")
+    return new  # .interpolate(method="spline", order=2, limit_are="outside")
 
 # a=get_factor("GGL", S_col)
 
