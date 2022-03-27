@@ -125,7 +125,7 @@ def update_graph(ticker):
                       title="ESG timeline")
     fig_ESG.update_traces(line_color="#00BC8C")
     fig_ESG.update_layout(font_color="white",
-                          plot_bgcolor="rgba(0, 0, 0, 0)", paper_bgcolor="rgba(0, 0, 0, 0)", title_x=0.5, margin=dict(l=20, r=20, t=30, b=20),  yaxis_title="ESG score")
+                          plot_bgcolor="rgba(0, 0, 0, 0)", paper_bgcolor="rgba(0, 0, 0, 0)", title_x=0.5, margin=dict(l=20, r=20, t=30, b=20),  yaxis_title="ESG score", xaxis_title="Financial Quarter")
     # fig_ESG.update_xaxes(visible=False)
 
     WINDOW = 30
@@ -137,7 +137,7 @@ def update_graph(ticker):
     fig_ESG.add_trace(go.Scatter(x=esg_df['date'],
                                  y=esg_df['sma'],
                                  line_color='black',
-                                 name='sma'),
+                                 name='Simple Moving Average'),
                       row=1, col=1)
 
     # Upper Bound
@@ -145,7 +145,7 @@ def update_graph(ticker):
                                  y=esg_df['sma'] + (esg_df['std'] * 2),
                                  line_color='gray',
                                  line={'dash': 'dash'},
-                                 name='upper band',
+                                 name='Upper Bollinger Band',
                                  opacity=0.5),
                       row=1, col=1)
 
@@ -155,7 +155,7 @@ def update_graph(ticker):
                                  line_color='gray',
                                  line={'dash': 'dash'},
                                  fill='tonexty',
-                                 name='lower band',
+                                 name='Lower Bollinger Band',
                                  opacity=0.5),
                       row=1, col=1)
 

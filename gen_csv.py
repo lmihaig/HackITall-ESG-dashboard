@@ -4,7 +4,7 @@ import itertools
 
 tickers = ["GGL", "FMI", "MMN"]
 
-provider = ["ARAT", "", "P3"]
+provider = ["ARAT", "ISS", "MSCI", "ETHOS", "MRATE"]
 
 date = list(itertools.chain.from_iterable([[f"{an}Q{q}" for q in [1, 2, 3, 4]] for an in range(2000, 2021)]))
 
