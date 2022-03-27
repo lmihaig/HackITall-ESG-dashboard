@@ -119,7 +119,46 @@ def update_graph(ticker):
     fig_S = get_Pie("Social factor", data_process.get_S(ticker))
     fig_G = get_Pie("Governance factor", data_process.get_G(ticker))
 
-    return fig_E, fig_S, fig_G, 0
+    esg_df = data_process.get_ESG(ticker)
+    fig_ESG = px.line(esg_df, x="date", y="ESG", markers=True,
+                      title="ESG timeline")
+    fig_ESG.update_traces(line_color="#00BC8C")
+    fig_ESG.update_layout(font_color="white",
+                          plot_bgcolor="rgba(0, 0, 0, 0)", paper_bgcolor="rgba(0, 0, 0, 0)", title_x=0.5, margin=dict(l=20, r=20, t=30, b=20),  yaxis_title="ESG score")
+    # fig_ESG.update_xaxes(visible=False)
+
+    WINDOW = 30
+    esg_df['sma'] = esg_df['ESG'].rolling(WINDOW).mean()
+    esg_df['std'] = esg_df['ESG'].rolling(WINDOW).std(ddof=0)
+    print(esg_df)
+
+    # Moving Average
+    fig_ESG.add_trace(go.Scatter(x=esg_df['date'],
+                                 y=esg_df['sma'],
+                                 line_color='black',
+                                 name='sma'),
+                      row=1, col=1)
+
+    # Upper Bound
+    fig_ESG.add_trace(go.Scatter(x=esg_df['date'],
+                                 y=esg_df['sma'] + (esg_df['std'] * 2),
+                                 line_color='gray',
+                                 line={'dash': 'dash'},
+                                 name='upper band',
+                                 opacity=0.5),
+                      row=1, col=1)
+
+    # Lower Bound fill in between with parameter 'fill': 'tonexty'
+    fig_ESG.add_trace(go.Scatter(x=esg_df['date'],
+                                 y=esg_df['sma'] - (esg_df['std'] * 2),
+                                 line_color='gray',
+                                 line={'dash': 'dash'},
+                                 fill='tonexty',
+                                 name='lower band',
+                                 opacity=0.5),
+                      row=1, col=1)
+
+    return fig_E, fig_S, fig_G, fig_ESG
 
 
 if __name__ == "__main__":
