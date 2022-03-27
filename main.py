@@ -38,7 +38,8 @@ def get_Pie(text, temp_df):
         title_text=text,
         # Add annotations in the center of the donut pies.
         annotations=[dict(text=text[0], x=0.5, y=0.5, font_size=50, showarrow=False, font_color="white"),
-                     dict(text=str(round(last_entry.factor, 2)), x=0, y=0, font_size=50, showarrow=False, font_color="white")])
+                     dict(text=str(round(last_entry.factor, 2)), x=1.5, y=0, font_size=50, showarrow=False, font_color="white")])
+    fig.update_layout(legend={'itemsizing': 'constant'})
     return fig
 
 

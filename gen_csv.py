@@ -4,13 +4,13 @@ import itertools
 
 tickers = ["GGL", "FMI", "MMN"]
 
-provider = ["ARAT", "P2", "P3"]
+provider = ["ARAT", "", "P3"]
 
 date = list(itertools.chain.from_iterable([[f"{an}Q{q}" for q in [1, 2, 3, 4]] for an in range(2000, 2021)]))
 
-indices_E = ["I1", "I4", "I7"]
-indices_S = ["I2", "I5", "I8"]
-indices_G = ["I3", "I6", "I9"]
+indices_E = ["Greenhouse Gas Emissions", "Carbon Footprint", "Energy Consumption Intensity", "Production of hazardous waste"]
+indices_S = ["Equal representation", "Discrimination", "Personal data security and privacy"]
+indices_G = ["Bribery and corruption", "Accountability/rule of law", "Disclosures and practices"]
 indices = indices_E+indices_S+indices_G
 
 
