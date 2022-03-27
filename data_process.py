@@ -10,14 +10,23 @@ E_col = list(itertools.chain.from_iterable([(i, f"{i}_weight") for i in indices_
 S_col = list(itertools.chain.from_iterable([(i, f"{i}_weight") for i in indices_S]))
 G_col = list(itertools.chain.from_iterable([(i, f"{i}_weight") for i in indices_G]))
 
+
 def get_index_coloumns(row): return ([i[:-7] for i in row.index if "_weight" in i])
 def get_index_weight_coloumns(row): return ([i for i in row.index if "_weight" in i])
+
 
 def ce_face_functia_ta(rows):
     indices = get_index_coloumns(rows)
     weights = get_index_weight_coloumns(rows)
 
-    return sum(map(lambda x:x[0]*x[1] ,zip(rows[indices],rows[weights])))/sum(rows[weights])
+    return sum(map(lambda x: x[0]*x[1], zip(rows[indices], rows[weights])))/sum(rows[weights])
+
+
+def get_price(ticker):
+    b = pd.DataFrame(data=datastore, columns=["ticker", "date", "price"])
+    b = b[b['ticker'] == ticker]
+    return b
+
 
 def get_factor(ticker, cols):
     b = pd.DataFrame(data=datastore, columns=general_col+cols)

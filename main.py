@@ -114,8 +114,8 @@ app.layout = dbc.Container(fluid=True, children=[
                 dbc.CardHeader("Stock Growth", style={
                     "textAlign": "center"}),
                 dbc.CardBody([
-                    dcc.Graph(id="stockGrowth", figure={})
-                ])
+                    html.H1(id="stockPrice")
+                ], style={"textAlign": "center"})
             ])
         ], width=4),
         dbc.Col([
@@ -142,6 +142,8 @@ app.layout = dbc.Container(fluid=True, children=[
     Output("changeESG", "style"),
     Output("year_changeESG", "children"),
     Output("year_changeESG", "style"),
+    Output("stockPrice", "children"),
+    Output("stockPrice", "style"),
     Input(component_id='select_ticker', component_property='value')
 )
 def update_graph(ticker):
@@ -223,10 +225,19 @@ def update_graph(ticker):
     else:
         lastyear_colour = {"color": "green"}
 
+    stockPrice = data_process.get_price(ticker).iloc[-1].price
+
+    perc = 1
+    newStockPrice = stockPrice * perc
+    if newStockPrice <= stockPrice:
+        stockPrice_colour = {"color": "red"}
+    else:
+        stockPrice_colour = {"color": "green"}
+    stockPrice = str(stockPrice) + "➜" + str(newStockPrice)
     score = round(score, 2)
-    percentage = "Last quarter: "+str(percentage)+"%"
-    lastyear_percentage = "Last year: "+str(lastyear_percentage)+"%"
-    return fig_E, fig_S, fig_G, fig_ESG, grade, score, percentage, colour, lastyear_percentage, lastyear_colour
+    percentage = "Last Quarter: "+str(percentage)+"%"
+    lastyear_percentage = "Last Year: "+str(lastyear_percentage)+"%"
+    return fig_E, fig_S, fig_G, fig_ESG, grade, score, percentage, colour, lastyear_percentage, lastyear_colour, stockPrice, stockPrice_colour
 
 
 if __name__ == "__main__":
