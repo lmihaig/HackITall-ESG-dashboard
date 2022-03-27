@@ -10,17 +10,14 @@ E_col = list(itertools.chain.from_iterable([(i, f"{i}_weight") for i in indices_
 S_col = list(itertools.chain.from_iterable([(i, f"{i}_weight") for i in indices_S]))
 G_col = list(itertools.chain.from_iterable([(i, f"{i}_weight") for i in indices_G]))
 
+def get_index_coloumns(row): return ([i[:-7] for i in row.index if "_weight" in i])
+def get_index_weight_coloumns(row): return ([i for i in row.index if "_weight" in i])
 
 def ce_face_functia_ta(rows):
-    # print(rows[3:][0])
-    # indices=rows.index[3::2]
-    # weights=rows.index[4::2]
-    indices = rows[3::2]
-    weights = rows[4::2]
-    # help(rows)
-    # print(sum(map(*,zip(indices,weights)))/sum(weights))
-    return sum(map(lambda x: x[0]*x[1], zip(indices, weights)))/sum(weights)
+    indices = get_index_coloumns(rows)
+    weights = get_index_weight_coloumns(rows)
 
+    return sum(map(lambda x:x[0]*x[1] ,zip(rows[indices],rows[weights])))/sum(rows[weights])
 
 def get_factor(ticker, cols):
     b = pd.DataFrame(data=datastore, columns=general_col+cols)
@@ -52,7 +49,7 @@ def get_ESG(ticker):
 
 
 def get_index_percentage(row):
-    indices = ([i[:-7] for i in row.index if "_weight" in i])
+    indices = get_index_coloumns(row)
 
     index_df = pd.DataFrame({
         "index": indices,
