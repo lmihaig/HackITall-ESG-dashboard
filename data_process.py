@@ -46,7 +46,7 @@ def get_ESG(ticker):
     ESG = E['date']  # .reset_index()
 
     ESG = pd.concat([ESG, E['E'], S['S'], G['G']], axis=1)
-    ESG['ESG'] = E['E']+S['S']+G['G']
+    ESG['ESG'] = (E['E']+S['S']+G['G'])/3
 
     return ESG
 
