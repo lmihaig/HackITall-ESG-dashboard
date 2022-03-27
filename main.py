@@ -101,7 +101,37 @@ app.layout = dbc.Container(fluid=True, children=[
                 ])
             ])
         ], width=12),
-    ], style={"height": "40vh"},)
+    ]),
+    dbc.Row([
+        dbc.Col([
+            dbc.Card([
+                dbc.CardHeader("ESG Grade", style={
+                    "textAlign": "center"}),
+                dbc.CardBody([
+                    html.H1(id="gradeESG"),
+                    html.H1(id="scoreESG")
+                ], style={"textAlign": "center"})
+            ])
+        ], width=4),
+        dbc.Col([
+            dbc.Card([
+                dbc.CardHeader("Stock Growth", style={
+                    "textAlign": "center"}),
+                dbc.CardBody([
+                    dcc.Graph(id="stockGrowth", figure={})
+                ])
+            ])
+        ], width=4),
+        dbc.Col([
+            dbc.Card([
+                dbc.CardHeader("Events", style={
+                    "textAlign": "center"}),
+                dbc.CardBody([
+                    dcc.Graph(id="eventAdd", figure={})
+                ])
+            ])
+        ], width=4),
+    ])
 ], className="mt-2 mb-2")
 
 
@@ -110,6 +140,8 @@ app.layout = dbc.Container(fluid=True, children=[
     Output("scoreS", "figure"),
     Output("scoreG", "figure"),
     Output("timelineESG", "figure"),
+    Output("gradeESG", "children"),
+    Output("scoreESG", "children"),
     Input(component_id='select_ticker', component_property='value')
 )
 def update_graph(ticker):
@@ -131,7 +163,6 @@ def update_graph(ticker):
     WINDOW = 30
     esg_df['sma'] = esg_df['ESG'].rolling(WINDOW).mean()
     esg_df['std'] = esg_df['ESG'].rolling(WINDOW).std(ddof=0)
-    print(esg_df)
 
     # Moving Average
     fig_ESG.add_trace(go.Scatter(x=esg_df['date'],
@@ -159,7 +190,26 @@ def update_graph(ticker):
                                  opacity=0.5),
                       row=1, col=1)
     fig_ESG.update_xaxes(visible=False)
-    return fig_E, fig_S, fig_G, fig_ESG
+
+    score = esg_df.ESG.iloc[-1]
+    grade = ""
+    match score:
+        case num if 0 <= num < 1.429:
+            grade = "CCC"
+        case num if 1.429 <= num < 2.857:
+            grade = "B"
+        case num if 2.857 <= num < 4.286:
+            grade = "BB"
+        case num if 4.286 <= num < 5.714:
+            grade = "BBB"
+        case num if 5.714 <= num < 7.143:
+            grade = "A"
+        case num if 7.143 <= num < 8.571:
+            grade = "AA"
+        case num if 8.571 <= num <= 10:
+            grade = "AAA"
+
+    return fig_E, fig_S, fig_G, fig_ESG, grade, round(score, 2)
 
 
 if __name__ == "__main__":
