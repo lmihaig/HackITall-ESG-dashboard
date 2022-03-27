@@ -1,16 +1,10 @@
-
-from matplotlib import ticker
-from matplotlib.pyplot import get
 import pandas as pd
 import dash
 import plotly.express as px
 import dash_bootstrap_components as dbc
-from base64 import b64decode
-from dash.exceptions import PreventUpdate
-from dash import dcc, html, dash_table
-from dash.dependencies import Output, Input, State
+from dash import dcc, html
+from dash.dependencies import Output, Input
 import plotly.graph_objects as go
-from plotly.subplots import make_subplots
 import data_process
 
 
@@ -109,7 +103,9 @@ app.layout = dbc.Container(fluid=True, children=[
                     "textAlign": "center"}),
                 dbc.CardBody([
                     html.H1(id="gradeESG"),
-                    html.H1(id="scoreESG")
+                    html.H1(id="scoreESG"),
+                    html.H1(id="changeESG"),
+                    html.H1(id="year_changeESG")
                 ], style={"textAlign": "center"})
             ])
         ], width=4),
@@ -127,7 +123,7 @@ app.layout = dbc.Container(fluid=True, children=[
                 dbc.CardHeader("Events", style={
                     "textAlign": "center"}),
                 dbc.CardBody([
-                    dcc.Graph(id="eventAdd", figure={})
+                    html.H1(children="Add events")
                 ])
             ])
         ], width=4),
@@ -142,10 +138,14 @@ app.layout = dbc.Container(fluid=True, children=[
     Output("timelineESG", "figure"),
     Output("gradeESG", "children"),
     Output("scoreESG", "children"),
+    Output("changeESG", "children"),
+    Output("changeESG", "style"),
+    Output("year_changeESG", "children"),
+    Output("year_changeESG", "style"),
     Input(component_id='select_ticker', component_property='value')
 )
 def update_graph(ticker):
-    if(ticker == None):
+    if ticker is None:
         ticker = df.ticker.unique()[0]
 
     fig_E = get_Pie("Economic factor", data_process.get_E(ticker))
@@ -209,7 +209,24 @@ def update_graph(ticker):
         case num if 8.571 <= num <= 10:
             grade = "AAA"
 
-    return fig_E, fig_S, fig_G, fig_ESG, grade, round(score, 2)
+    last_score = esg_df.ESG.iloc[-2]
+    percentage = round(score/last_score - 1, 2)
+    if percentage <= 0:
+        colour = {"color": "red"}
+    else:
+        colour = {"color": "green"}
+
+    lastyear_score = esg_df.ESG.iloc[-5]
+    lastyear_percentage = round(score/lastyear_score - 1, 2)
+    if lastyear_percentage <= 0:
+        lastyear_colour = {"color": "red"}
+    else:
+        lastyear_colour = {"color": "green"}
+
+    score = round(score, 2)
+    percentage = "Last quarter: "+str(percentage)+"%"
+    lastyear_percentage = "Last year: "+str(lastyear_percentage)+"%"
+    return fig_E, fig_S, fig_G, fig_ESG, grade, score, percentage, colour, lastyear_percentage, lastyear_colour
 
 
 if __name__ == "__main__":
